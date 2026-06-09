@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wanderlust — Discover Anywhere</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,300;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0a0a0a;--ink2:#3d3d3d;--ink3:#888;
+  --sand:#f7f2ea;--sand2:#ede6d8;--sand3:#e0d5c0;
+  --gold:#b8831a;--gold2:#d4a032;--goldbg:#fdf6e8;--goldborder:rgba(184,131,26,0.22);
+  --sky:#15607c;--skybg:#e6f3f8;
+  --coral:#c8442a;--coralbg:#fdf0ed;
+  --jade:#1a7a5e;--jadebg:#e8f5f0;
+  --violet:#5a3fa0;--violetbg:#f0edfb;
+  --white:#fff;--radius:14px;--radius-lg:22px;--radius-xl:32px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--ink);overflow-x:hidden}
+.cursor-dot{position:fixed;width:8px;height:8px;background:var(--gold2);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:multiply;transition:opacity 0.3s}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0.9rem 2.5rem;background:rgba(247,242,234,0.85);backdrop-filter:blur(18px);border-bottom:1px solid var(--goldborder)}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:var(--ink);letter-spacing:-0.01em;display:flex;align-items:center;gap:0.4rem}
+.nav-dot{width:8px;height:8px;background:var(--gold2);border-radius:50%;display:inline-block;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:0.6}}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{text-decoration:none;color:var(--ink2);font-size:0.85rem;font-weight:500;letter-spacing:0.03em;transition:color 0.2s}
+.nav-links a:hover{color:var(--gold)}
+.nav-cta{background:var(--ink);color:var(--white);border:none;padding:0.55rem 1.2rem;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;cursor:pointer;transition:background 0.2s,transform 0.15s}
+.nav-cta:hover{background:var(--gold);transform:scale(1.03)}
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7rem 2rem 4rem;position:relative;overflow:hidden}
+.hero-mesh{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse 80% 60% at 10% 20%,rgba(184,131,26,0.07) 0%,transparent 60%),radial-gradient(ellipse 60% 80% at 90% 80%,rgba(21,96,124,0.07) 0%,transparent 60%),radial-gradient(ellipse 50% 50% at 50% 10%,rgba(200,68,42,0.04) 0%,transparent 50%)}
+.marquee-wrap{position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);z-index:0;overflow:hidden;opacity:0.03;pointer-events:none;white-space:nowrap}
+.marquee-inner{display:inline-block;font-family:'Cormorant Garamond',serif;font-size:10rem;font-weight:700;color:var(--ink);animation:marquee 30s linear infinite;letter-spacing:-0.02em}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.particle{position:absolute;border-radius:50%;pointer-events:none;animation:floatUp linear infinite;opacity:0.12}
+@keyframes floatUp{0%{transform:translateY(0) rotate(0deg);opacity:0}10%{opacity:0.12}90%{opacity:0.08}100%{transform:translateY(-100vh) rotate(720deg);opacity:0}}
+.hero-content{position:relative;z-index:1;text-align:center;max-width:800px}
+.pill{display:inline-flex;align-items:center;gap:0.5rem;background:var(--goldbg);border:1px solid var(--goldborder);color:var(--gold);padding:0.38rem 1.1rem;border-radius:100px;font-size:0.72rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:1.75rem;animation:fadeUp 0.7s ease both}
+.pill-dot{width:6px;height:6px;background:var(--gold2);border-radius:50%;animation:pulse 1.5s ease-in-out infinite}
+h1.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(3rem,8vw,6.5rem);line-height:1.0;font-weight:700;letter-spacing:-0.03em;color:var(--ink);margin-bottom:1.4rem;animation:fadeUp 0.7s 0.12s ease both}
+h1.hero-title em{color:var(--sky);font-style:italic;font-weight:300}
+h1.hero-title .gw{color:var(--gold)}
+.hero-sub{font-size:1.05rem;color:var(--ink2);font-weight:300;line-height:1.75;margin-bottom:3rem;max-width:540px;margin-left:auto;margin-right:auto;animation:fadeUp 0.7s 0.24s ease both}
+.search-wrap{position:relative;width:100%;max-width:620px;margin:0 auto 1.5rem;animation:fadeUp 0.7s 0.36s ease both}
+.search-outer{display:flex;align-items:center;background:var(--white);border:2px solid var(--goldborder);border-radius:100px;padding:0.45rem 0.45rem 0.45rem 1.6rem;box-shadow:0 12px 50px rgba(0,0,0,0.08);transition:border-color 0.25s,box-shadow 0.25s}
+.search-outer:focus-within{border-color:var(--gold2);box-shadow:0 12px 50px rgba(184,131,26,0.18)}
+.s-icon{color:var(--ink3);flex-shrink:0;margin-right:0.6rem}
+#searchInput{flex:1;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:1rem;color:var(--ink);background:transparent;padding:0.65rem 0}
+#searchInput::placeholder{color:var(--ink3)}
+.search-btn{background:var(--ink);color:var(--white);border:none;border-radius:100px;padding:0.8rem 1.6rem;font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:0.5rem;transition:background 0.2s,transform 0.15s;white-space:nowrap;flex-shrink:0}
+.search-btn:hover{background:var(--gold);transform:scale(1.04)}
+.search-btn:active{transform:scale(0.97)}
+.search-btn.loading{background:var(--gold2);pointer-events:none}
+.search-btn svg{width:15px;height:15px}
+.sugg-box{position:absolute;top:calc(100% + 10px);left:0;right:0;background:var(--white);border-radius:var(--radius-lg);border:1px solid var(--goldborder);box-shadow:0 16px 50px rgba(0,0,0,0.1);overflow:hidden;z-index:100;display:none}
+.sugg-box.open{display:block;animation:dropIn 0.2s ease}
+@keyframes dropIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.sugg-item{padding:0.85rem 1.25rem;cursor:pointer;font-size:0.88rem;color:var(--ink2);display:flex;align-items:center;gap:0.9rem;transition:background 0.12s;border-bottom:1px solid var(--sand)}
+.sugg-item:last-child{border-bottom:none}
+.sugg-item:hover{background:var(--sand);color:var(--ink)}
+.sugg-flag{font-size:1.3rem}
+.sugg-meta{display:flex;flex-direction:column}
+.sugg-name{font-weight:500}
+.sugg-type{font-size:0.72rem;color:var(--ink3);margin-top:0.1rem}
+.shortcuts{display:flex;flex-wrap:wrap;justify-content:center;gap:0.5rem;animation:fadeUp 0.7s 0.48s ease both;margin-bottom:3rem}
+.sc{background:var(--white);border:1px solid var(--sand3);color:var(--ink2);padding:0.38rem 0.9rem;border-radius:100px;font-size:0.78rem;font-weight:500;cursor:pointer;transition:all 0.18s}
+.sc:hover{background:var(--goldbg);border-color:var(--goldborder);color:var(--gold)}
+.results-area{width:100%;max-width:960px;margin:0 auto}
+.skel{background:var(--white);border-radius:var(--radius-xl);border:1px solid var(--goldborder);padding:2.5rem;display:none}
+.skel.show{display:block;animation:cardIn 0.4s ease}
+.sk{height:14px;background:linear-gradient(90deg,var(--sand) 25%,var(--sand2) 50%,var(--sand) 75%);background-size:200% 100%;border-radius:8px;margin-bottom:0.75rem;animation:shimmer 1.4s ease-in-out infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.result-card{background:var(--white);border-radius:var(--radius-xl);border:1px solid var(--goldborder);box-shadow:0 6px 40px rgba(0,0,0,0.06);overflow:hidden;display:none}
+.result-card.show{display:block;animation:cardIn 0.55s cubic-bezier(0.22,1,0.36,1) both}
+@keyframes cardIn{from{opacity:0;transform:translateY(24px) scale(0.97)}to{opacity:1;transform:none}}
+.r-banner{padding:2.5rem 2.5rem 2rem;background:linear-gradient(135deg,#0d2235 0%,#1a6b8a 100%);color:var(--white);position:relative;overflow:hidden}
+.r-banner::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E")}
+.r-banner-top{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;position:relative;z-index:1}
+.r-dest{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:700;line-height:1.1;margin-bottom:0.4rem}
+.r-tagline{font-size:0.95rem;opacity:0.75;font-style:italic;font-weight:300}
+.r-badge{background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2);color:var(--white);padding:0.4rem 1rem;border-radius:100px;font-size:0.75rem;font-weight:600;white-space:nowrap}
+.r-stats{display:flex;gap:2rem;margin-top:1.5rem;position:relative;z-index:1;flex-wrap:wrap}
+.rs{display:flex;flex-direction:column;gap:0.15rem}
+.rs-val{font-size:1rem;font-weight:600}
+.rs-lbl{font-size:0.7rem;opacity:0.6;letter-spacing:0.08em;text-transform:uppercase}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--sand2);background:var(--white);padding:0 2.5rem}
+.tab-btn{padding:1rem 1.2rem;font-family:'DM Sans',sans-serif;font-size:0.84rem;font-weight:500;color:var(--ink3);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color 0.2s,border-color 0.2s;white-space:nowrap}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold)}
+.tab-btn:hover{color:var(--ink2)}
+.tab-pane{display:none;padding:2rem 2.5rem}
+.tab-pane.active{display:block;animation:fadeIn 0.3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.875rem;margin-bottom:1.75rem}
+.info-tile{background:var(--sand);border-radius:var(--radius);padding:1rem 1.1rem;transition:transform 0.2s}
+.info-tile:hover{transform:translateY(-2px)}
+.i-lbl{font-size:0.66rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:0.35rem}
+.i-val{font-size:0.93rem;font-weight:500;color:var(--ink);line-height:1.45}
+.attr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;margin-bottom:1.5rem}
+.attr-card{border-radius:var(--radius);padding:1.15rem 1.2rem;border-left:3px solid var(--gold2);background:var(--goldbg);transition:transform 0.2s,box-shadow 0.2s}
+.attr-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.08)}
+.attr-num{font-size:0.68rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:0.35rem}
+.attr-name{font-weight:600;font-size:0.93rem;margin-bottom:0.3rem;color:var(--ink)}
+.attr-desc{font-size:0.8rem;color:var(--ink2);line-height:1.55}
+.cuis-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:0.75rem;margin-bottom:1.5rem}
+.cuis-card{background:var(--coralbg);border:1px solid rgba(200,68,42,0.12);border-radius:var(--radius);padding:0.9rem 1rem;text-align:center;transition:transform 0.2s}
+.cuis-card:hover{transform:translateY(-2px)}
+.cuis-emoji{font-size:1.6rem;margin-bottom:0.4rem}
+.cuis-name{font-size:0.82rem;font-weight:600;color:var(--ink)}
+.cuis-note{font-size:0.72rem;color:var(--ink3);margin-top:0.3rem;line-height:1.4}
+.tips-list{display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1.5rem}
+.tip-item{display:flex;align-items:flex-start;gap:0.9rem;background:var(--jadebg);border-radius:var(--radius);padding:0.95rem 1.1rem;border-left:3px solid var(--jade)}
+.tip-ico{font-size:1.1rem;flex-shrink:0;margin-top:0.05rem}
+.tip-txt{font-size:0.87rem;color:var(--ink);line-height:1.6}
+.seas-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0.75rem;margin-bottom:1.5rem}
+.sea-card{border-radius:var(--radius);padding:1rem;text-align:center;border:1.5px solid transparent;transition:all 0.2s}
+.sea-card.best{border-color:var(--gold2);background:var(--goldbg)}
+.sea-card.good{background:var(--jadebg);border-color:rgba(26,122,94,0.2)}
+.sea-card.ok{background:var(--sand);border-color:var(--sand3)}
+.sea-card.avoid{background:var(--coralbg);border-color:rgba(200,68,42,0.15)}
+.sea-ico{font-size:1.5rem;margin-bottom:0.4rem}
+.sea-name{font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.3rem}
+.sea-desc{font-size:0.72rem;color:var(--ink2);line-height:1.45}
+.sea-badge{font-size:0.65rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:0.2rem 0.5rem;border-radius:100px;margin-top:0.4rem;display:inline-block}
+.sea-card.best .sea-badge{background:var(--gold2);color:var(--white)}
+.sea-card.good .sea-badge{background:var(--jade);color:var(--white)}
+.btime{background:linear-gradient(135deg,var(--skybg),var(--goldbg));border:1px solid rgba(21,96,124,0.12);border-radius:var(--radius);padding:1.2rem 1.3rem;font-size:0.9rem;color:var(--ink);line-height:1.7;margin-bottom:1rem}
+.bgt-row{display:flex;align-items:center;gap:0.9rem;margin-bottom:0.6rem}
+.bgt-lbl{font-size:0.8rem;color:var(--ink2);width:130px;flex-shrink:0}
+.bgt-track{flex:1;height:8px;background:var(--sand2);border-radius:100px;overflow:hidden}
+.bgt-fill{height:100%;border-radius:100px;background:var(--gold2);transition:width 0.9s cubic-bezier(0.22,1,0.36,1)}
+.bgt-val{font-size:0.8rem;font-weight:600;color:var(--ink);width:70px;text-align:right}
+.sec-h{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:var(--ink);margin-bottom:1rem;display:flex;align-items:center;gap:0.6rem}
+.sec-h::after{content:'';flex:1;height:1px;background:var(--sand2)}
+.err-pill{display:none;align-items:center;gap:0.75rem;background:#fff5f3;border:1px solid rgba(200,68,42,0.2);border-radius:100px;padding:0.65rem 1.2rem;font-size:0.85rem;color:var(--coral);margin-top:1rem}
+.err-pill.show{display:inline-flex;animation:fadeUp 0.3s ease}
+/* ── SECTIONS ── */
+.section{padding:5.5rem 2rem}
+.si{max-width:1140px;margin:0 auto}
+.ey{font-size:0.7rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:0.75rem}
+.st{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4.5vw,3.5rem);font-weight:700;letter-spacing:-0.025em;color:var(--ink);margin-bottom:0.75rem;line-height:1.1}
+.st em{color:var(--sky);font-style:italic;font-weight:300}
+.ss{font-size:0.97rem;color:var(--ink2);max-width:500px;line-height:1.75;margin-bottom:3.5rem}
+.dest-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem}
+.dest-card{background:var(--white);border-radius:var(--radius-lg);border:1px solid var(--sand3);overflow:hidden;cursor:pointer;transition:transform 0.35s cubic-bezier(0.22,1,0.36,1),box-shadow 0.35s,border-color 0.25s}
+.dest-card:hover{transform:translateY(-8px);box-shadow:0 24px 60px rgba(0,0,0,0.11);border-color:var(--goldborder)}
+.dest-vis{height:180px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.dest-emo{font-size:4.5rem;transition:transform 0.4s}
+.dest-card:hover .dest-emo{transform:scale(1.15) rotate(-3deg)}
+.dest-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.1) 0%,transparent 60%)}
+.dest-body{padding:1.2rem 1.35rem 1.4rem}
+.dest-reg{font-size:0.68rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:0.3rem}
+.dest-nm{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:var(--ink);margin-bottom:0.4rem}
+.dest-dc{font-size:0.82rem;color:var(--ink2);line-height:1.6;margin-bottom:1rem}
+.dest-tags{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1rem}
+.dtag{font-size:0.7rem;background:var(--sand);color:var(--ink2);padding:0.22rem 0.65rem;border-radius:100px;font-weight:500}
+.dest-ft{display:flex;align-items:center;justify-content:space-between}
+.dest-btn{font-size:0.8rem;font-weight:600;color:var(--sky);background:none;border:none;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:0.35rem;transition:gap 0.2s;padding:0}
+.dest-btn:hover{gap:0.6rem}
+.dest-rt{font-size:0.78rem;color:var(--ink3)}
+.dest-rt span{color:var(--gold2)}
+/* how */
+.how-sec{background:var(--ink);color:var(--white);padding:5.5rem 2rem}
+.how-in{max-width:1140px;margin:0 auto}
+.how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2.5rem;margin-top:3rem}
+.how-num{font-family:'Cormorant Garamond',serif;font-size:3.5rem;font-weight:700;color:rgba(184,131,26,0.2);line-height:1;margin-bottom:0.75rem}
+.how-ico{font-size:1.8rem;margin-bottom:0.75rem}
+.how-ttl{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;margin-bottom:0.5rem}
+.how-dc{font-size:0.84rem;color:rgba(255,255,255,0.5);line-height:1.7}
+/* exp */
+.exp-grid{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:auto auto;gap:1.25rem}
+.exp-card{border-radius:var(--radius-lg);padding:2rem;position:relative;overflow:hidden;cursor:default;transition:transform 0.3s,box-shadow 0.3s}
+.exp-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,0.1)}
+.exp-card.big{grid-column:span 2;background:linear-gradient(135deg,#0d2235,#1a6b8a);color:var(--white)}
+.exp-card.sky{background:var(--skybg);border:1px solid rgba(21,96,124,0.15)}
+.exp-card.gold{background:var(--goldbg);border:1px solid var(--goldborder)}
+.exp-card.coral{background:var(--coralbg);border:1px solid rgba(200,68,42,0.12)}
+.exp-card.jade{background:var(--jadebg);border:1px solid rgba(26,122,94,0.15)}
+.exp-card.violet{background:var(--violetbg);border:1px solid rgba(90,63,160,0.12)}
+.exp-emo{font-size:2.2rem;margin-bottom:0.85rem}
+.exp-ttl{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:700;margin-bottom:0.5rem}
+.exp-card.big .exp-ttl{font-size:1.7rem;color:var(--white)}
+.exp-dc{font-size:0.83rem;line-height:1.65;opacity:0.75}
+.exp-card.big .exp-dc{color:var(--white)}
+/* stats */
+.stats-sec{padding:4.5rem 2rem;background:linear-gradient(135deg,#0d2235 0%,#1a6b8a 60%,#c8831a 100%);color:var(--white)}
+.stats-in{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:2rem;text-align:center}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:3.5rem;font-weight:700;line-height:1;margin-bottom:0.35rem}
+.stat-lbl{font-size:0.8rem;opacity:0.6;letter-spacing:0.1em;text-transform:uppercase}
+/* testimonials */
+.test-sec{padding:5.5rem 2rem;background:var(--white)}
+.test-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin-top:3rem}
+.test-card{background:var(--sand);border-radius:var(--radius-lg);padding:1.75rem;border:1px solid var(--sand3);transition:transform 0.25s}
+.test-card:hover{transform:translateY(-3px)}
+.test-q{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-style:italic;font-weight:300;color:var(--ink);line-height:1.7;margin-bottom:1.25rem}
+.test-auth{display:flex;align-items:center;gap:0.75rem}
+.test-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.test-nm{font-weight:600;font-size:0.88rem;color:var(--ink)}
+.test-dt{font-size:0.76rem;color:var(--ink3)}
+.test-stars{color:var(--gold2);font-size:0.75rem;margin-bottom:0.5rem}
+/* nl */
+.nl-sec{padding:5rem 2rem;background:var(--sand2)}
+.nl-in{max-width:580px;margin:0 auto;text-align:center}
+.nl-form{display:flex;gap:0.75rem;margin-top:2rem;flex-wrap:wrap;justify-content:center}
+.nl-input{flex:1;min-width:220px;border:1.5px solid var(--sand3);border-radius:100px;padding:0.8rem 1.4rem;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--white);outline:none;color:var(--ink);transition:border-color 0.2s}
+.nl-input:focus{border-color:var(--gold2)}
+.nl-btn{background:var(--ink);color:var(--white);border:none;border-radius:100px;padding:0.8rem 1.6rem;font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:600;cursor:pointer;transition:background 0.2s;white-space:nowrap}
+.nl-btn:hover{background:var(--gold)}
+footer{background:var(--ink);color:rgba(255,255,255,0.45);padding:3rem 2.5rem 2rem}
+.f-in{max-width:1140px;margin:0 auto}
+.f-top{display:flex;align-items:flex-start;justify-content:space-between;gap:2rem;margin-bottom:2.5rem;flex-wrap:wrap}
+.f-logo{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:var(--white);margin-bottom:0.5rem}
+.f-tag{font-size:0.8rem;color:rgba(255,255,255,0.35)}
+.f-links{display:flex;gap:3rem;flex-wrap:wrap}
+.f-col h4{font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.6);margin-bottom:0.75rem}
+.f-col a{display:block;font-size:0.82rem;color:rgba(255,255,255,0.4);text-decoration:none;margin-bottom:0.45rem;transition:color 0.2s}
+.f-col a:hover{color:var(--gold2)}
+.f-bot{border-top:1px solid rgba(255,255,255,0.06);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;font-size:0.78rem;color:rgba(255,255,255,0.25);flex-wrap:wrap;gap:0.5rem}
+.reveal{opacity:0;transform:translateY(32px);transition:opacity 0.75s ease,transform 0.75s cubic-bezier(0.22,1,0.36,1)}
+.reveal.in{opacity:1;transform:none}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:768px){
+  .nav-links,.nav-cta{display:none}
+  nav{padding:0.8rem 1.25rem}
+  .hero{padding:5.5rem 1.25rem 3rem}
+  .tab-pane{padding:1.5rem 1.25rem}
+  .tabs{padding:0 1.25rem}
+  .r-banner{padding:1.75rem 1.25rem 1.5rem}
+  .seas-grid{grid-template-columns:repeat(2,1fr)}
+  .exp-grid{grid-template-columns:1fr}
+  .exp-card.big{grid-column:span 1}
+  .f-links{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor-dot" id="cursorDot"></div>
+
+<nav>
+  <div class="nav-logo">Wander<span style="color:var(--gold)">lust</span> <span class="nav-dot"></span></div>
+  <ul class="nav-links">
+    <li><a href="#explore">Explore</a></li>
+    <li><a href="#experiences">Experiences</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#stories">Stories</a></li>
+  </ul>
+  <button class="nav-cta" onclick="document.getElementById('searchInput').focus();document.getElementById('hero').scrollIntoView({behavior:'smooth'})">Plan a Trip</button>
+</nav>
+
+<section class="hero" id="hero">
+  <div class="hero-mesh"></div>
+  <div class="marquee-wrap"><div class="marquee-inner">EXPLORE &middot; DISCOVER &middot; WANDER &middot; ADVENTURE &middot; EXPLORE &middot; DISCOVER &middot; WANDER &middot; ADVENTURE &middot; &nbsp;</div></div>
+  <div id="particles"></div>
+  <div class="hero-content">
+    <div class="pill"><span class="pill-dot"></span> AI-Powered &middot; Any city, town or village</div>
+    <h1 class="hero-title">Every place<br>has a <em>story</em><br>to <span class="gw">tell</span></h1>
+    <p class="hero-sub">Search any destination on Earth &mdash; from world capitals to tiny remote villages &mdash; and get an instant AI travel guide in seconds.</p>
+    <div class="search-wrap">
+      <div class="search-outer">
+        <svg class="s-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="searchInput" placeholder="Search any city, town, village, country..." autocomplete="off">
+        <button class="search-btn" id="searchBtn" onclick="doSearch()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          Explore
+        </button>
+      </div>
+      <div class="sugg-box" id="suggestBox"></div>
+    </div>
+    <div class="shortcuts">
+      <span class="sc" onclick="qs('Amalfi Coast, Italy')">&#127470;&#127481; Amalfi Coast</span>
+      <span class="sc" onclick="qs('Hallstatt, Austria')">&#127462;&#127481; Hallstatt</span>
+      <span class="sc" onclick="qs('Chefchaouen, Morocco')">&#127474;&#127462; Chefchaouen</span>
+      <span class="sc" onclick="qs('Queenstown, New Zealand')">&#127475;&#127487; Queenstown</span>
+      <span class="sc" onclick="qs('Tbilisi, Georgia')">&#127468;&#127466; Tbilisi</span>
+      <span class="sc" onclick="qs('Hoi An, Vietnam')">&#127483;&#127475; H&#7897;i An</span>
+    </div>
+    <div class="err-pill" id="errPill">&#9888; <span id="errMsg">Something went wrong.</span></div>
+    <div class="results-area" id="resultsArea">
+      <div class="skel" id="skelCard">
+        <div class="sk" style="height:42px;width:55%;margin-bottom:1rem"></div>
+        <div class="sk" style="width:35%;height:16px;margin-bottom:1.5rem"></div>
+        <div class="sk" style="width:80%;height:12px"></div>
+        <div class="sk" style="width:60%;height:12px"></div>
+        <div style="height:1.5rem"></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem">
+          <div class="sk" style="height:60px;margin:0"></div>
+          <div class="sk" style="height:60px;margin:0"></div>
+          <div class="sk" style="height:60px;margin:0"></div>
+        </div>
+      </div>
+      <div class="result-card" id="resultCard"></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="explore">
+  <div class="si">
+    <div class="ey reveal">Handpicked Gems</div>
+    <h2 class="st reveal">Trending <em>right now</em></h2>
+    <p class="ss reveal">From buzzing metropolises to sleepy hilltop villages. Click any card to explore instantly.</p>
+    <div class="dest-grid" id="destGrid"></div>
+  </div>
+</section>
+
+<section class="section" id="experiences" style="background:var(--sand2)">
+  <div class="si">
+    <div class="ey reveal">What Awaits</div>
+    <h2 class="st reveal">Travel by <em>experience</em></h2>
+    <p class="ss reveal">Whatever moves you, we'll find the perfect place for it.</p>
+    <div class="exp-grid reveal">
+      <div class="exp-card big">
+        <div class="exp-emo">&#127758;</div>
+        <div class="exp-ttl">Off-the-Beaten-Path Discovery</div>
+        <p class="exp-dc">Our AI digs past the guidebooks to surface hidden villages, forgotten ruins, and locally-loved spots most tourists never find. Type any remote hamlet and we'll paint its world for you.</p>
+      </div>
+      <div class="exp-card sky">
+        <div class="exp-emo">&#127940;</div>
+        <div class="exp-ttl">Adventure Travel</div>
+        <p class="exp-dc">Trek volcanoes, surf wild coasts, and camp under skies full of stars.</p>
+      </div>
+      <div class="exp-card gold">
+        <div class="exp-emo">&#127836;</div>
+        <div class="exp-ttl">Food &amp; Flavour</div>
+        <p class="exp-dc">From Michelin tables to roadside stalls, every destination's soul is in its food.</p>
+      </div>
+      <div class="exp-card coral">
+        <div class="exp-emo">&#127963;</div>
+        <div class="exp-ttl">History &amp; Culture</div>
+        <p class="exp-dc">Walk through millennia of human history in a single afternoon.</p>
+      </div>
+      <div class="exp-card jade">
+        <div class="exp-emo">&#127807;</div>
+        <div class="exp-ttl">Eco &amp; Slow Travel</div>
+        <p class="exp-dc">Reconnect with nature and communities at a gentler, more intentional pace.</p>
+      </div>
+      <div class="exp-card violet">
+        <div class="exp-emo">&#10024;</div>
+        <div class="exp-ttl">Luxury Escapes</div>
+        <p class="exp-dc">Curated stays, private experiences, and the art of going somewhere extraordinary.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="how-sec" id="how">
+  <div class="how-in">
+    <div class="ey" style="color:rgba(184,131,26,0.7)">Simple as 1-2-3</div>
+    <h2 class="st" style="color:var(--white)">How <em style="color:var(--gold2)">Wanderlust</em> works</h2>
+    <div class="how-grid">
+      <div class="how-step reveal"><div class="how-num">01</div><div class="how-ico">&#128269;</div><div class="how-ttl">Type Anything</div><p class="how-dc">A city, a tiny village, a region, an island. If it exists anywhere on Earth, just type it. Our AI understands geography at every scale.</p></div>
+      <div class="how-step reveal"><div class="how-num">02</div><div class="how-ico">&#9889;</div><div class="how-ttl">Instant AI Guide</div><p class="how-dc">Powered by Claude Haiku, results stream back in seconds. Attractions, food, tips, best season, budget breakdowns, all in one card.</p></div>
+      <div class="how-step reveal"><div class="how-num">03</div><div class="how-ico">&#128506;</div><div class="how-ttl">Explore the Tabs</div><p class="how-dc">Dive into Overview, Attractions, Cuisine, Travel Tips, and Seasons tabs. Every destination gets its own tailored guide.</p></div>
+      <div class="how-step reveal"><div class="how-num">04</div><div class="how-ico">&#9992;&#65039;</div><div class="how-ttl">Go Explore</div><p class="how-dc">Bookmark your favourites, plan your route, and head out knowing everything you need to make the trip unforgettable.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="stats-sec">
+  <div class="stats-in">
+    <div class="reveal"><div class="stat-num">195+</div><div class="stat-lbl">Countries covered</div></div>
+    <div class="reveal"><div class="stat-num">50K+</div><div class="stat-lbl">Cities &amp; villages</div></div>
+    <div class="reveal"><div class="stat-num">&lt;3s</div><div class="stat-lbl">Average search time</div></div>
+    <div class="reveal"><div class="stat-num">100%</div><div class="stat-lbl">AI-powered results</div></div>
+  </div>
+</div>
+
+<section class="test-sec" id="stories">
+  <div class="si">
+    <div class="ey reveal">Traveller Stories</div>
+    <h2 class="st reveal">What explorers <em>say</em></h2>
+    <div class="test-grid">
+      <div class="test-card reveal"><div class="test-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="test-q">"I typed in a tiny village in Tuscany and within seconds I had a full guide, including where the locals actually eat. Magical."</div><div class="test-auth"><div class="test-av" style="background:#fdf0e6">&#127800;</div><div><div class="test-nm">Priya Mehta</div><div class="test-dt">Explored Pitigliano, Italy</div></div></div></div>
+      <div class="test-card reveal"><div class="test-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="test-q">"Searched Cappadocia before my trip and the seasonal guide saved me. Told me exactly why October was perfect. Spot on."</div><div class="test-auth"><div class="test-av" style="background:#e6f3f8">&#129517;</div><div><div class="test-nm">James O'Brien</div><div class="test-dt">Explored Cappadocia, Turkey</div></div></div></div>
+      <div class="test-card reveal"><div class="test-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="test-q">"The daily cost breakdown changed how I plan. I searched 12 destinations in one afternoon to compare costs. Game changer."</div><div class="test-auth"><div class="test-av" style="background:#e8f5f0">&#127796;</div><div><div class="test-nm">Sofia Andrade</div><div class="test-dt">Explored Southeast Asia</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="nl-sec">
+  <div class="nl-in reveal">
+    <div class="ey" style="text-align:center">Stay Inspired</div>
+    <h2 class="st" style="text-align:center;font-size:2.2rem">Weekly <em>wanderings</em></h2>
+    <p style="color:var(--ink2);font-size:0.95rem;line-height:1.7;margin-top:0.5rem">Curated destination picks, hidden gems, and travel tips every Friday.</p>
+    <div class="nl-form"><input class="nl-input" type="email" placeholder="your@email.com"><button class="nl-btn">Subscribe &#8594;</button></div>
+  </div>
+</section>
+
+<footer>
+  <div class="f-in">
+    <div class="f-top">
+      <div><div class="f-logo">Wanderlust</div><div class="f-tag">AI-powered travel discovery for every corner of the world.</div></div>
+      <div class="f-links">
+        <div class="f-col"><h4>Explore</h4><a href="#">Destinations</a><a href="#">City Guides</a><a href="#">Hidden Gems</a></div>
+        <div class="f-col"><h4>Company</h4><a href="#">About</a><a href="#">Blog</a><a href="#">Careers</a></div>
+        <div class="f-col"><h4>Legal</h4><a href="#">Privacy</a><a href="#">Terms</a></div>
+      </div>
+    </div>
+    <div class="f-bot"><span>&#169; 2026 Wanderlust &middot; Powered by Claude AI</span><span>Built for explorers everywhere &#127758;</span></div>
+  </div>
+</footer>
+
+<script>
+// cursor
+const dot=document.getElementById('cursorDot');
+document.addEventListener('mousemove',e=>{dot.style.left=e.clientX+'px';dot.style.top=e.clientY+'px'});
+
+// particles
+(function(){
+  const c=document.getElementById('particles');
+  for(let i=0;i<18;i++){
+    const p=document.createElement('div');p.className='particle';
+    const s=Math.random()*5+3;
+    p.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;bottom:${-s}px;animation-duration:${8+Math.random()*14}s;animation-delay:${Math.random()*10}s;background:${Math.random()>.5?'var(--gold2)':'var(--sky)'}`;
+    c.appendChild(p);
+  }
+})();
+
+// dest cards
+const DESTS=[
+  {city:'Kyoto',country:'Japan',region:'East Asia',emoji:'&#9961;&#65039;',bg:'#fce8e6',tags:['Temples','Geisha','Gardens'],rating:'4.9'},
+  {city:'Hallstatt',country:'Austria',region:'Central Europe',emoji:'&#127968;',bg:'#e8f3fc',tags:['Alpine','Lake','Fairytale'],rating:'4.8'},
+  {city:'Chefchaouen',country:'Morocco',region:'North Africa',emoji:'&#128309;',bg:'#eeeeff',tags:['Blue City','Medina','Hiking'],rating:'4.7'},
+  {city:'Hoi An',country:'Vietnam',region:'Southeast Asia',emoji:'&#127982;',bg:'#fff8e6',tags:['Ancient Town','Lanterns','Food'],rating:'4.9'},
+  {city:'Tbilisi',country:'Georgia',region:'Caucasus',emoji:'&#127863;',bg:'#f5efe8',tags:['Wine','History','Baths'],rating:'4.7'},
+  {city:'Queenstown',country:'New Zealand',region:'Oceania',emoji:'&#127952;',bg:'#e8f5f0',tags:['Adventure','Fjords','Skiing'],rating:'4.8'},
+];
+function buildGrid(){
+  document.getElementById('destGrid').innerHTML=DESTS.map(d=>`
+    <div class="dest-card" onclick="qs('${d.city}, ${d.country}')">
+      <div class="dest-vis" style="background:${d.bg}"><span class="dest-emo">${d.emoji}</span><div class="dest-ov"></div></div>
+      <div class="dest-body">
+        <div class="dest-reg">${d.region} &middot; ${d.country}</div>
+        <div class="dest-nm">${d.city}</div>
+        <div class="dest-tags">${d.tags.map(t=>`<span class="dtag">${t}</span>`).join('')}</div>
+        <div class="dest-ft"><button class="dest-btn">Explore now &rarr;</button><div class="dest-rt"><span>&#9733;</span> ${d.rating}</div></div>
+      </div>
+    </div>`).join('');
+}
+
+// suggestions
+const SUGGS=[
+  {name:'Tokyo, Japan',flag:'&#127471;&#127477;',type:'Megacity'},
+  {name:'Paris, France',flag:'&#127467;&#127479;',type:'Capital'},
+  {name:'Bali, Indonesia',flag:'&#127470;&#127465;',type:'Island'},
+  {name:'Santorini, Greece',flag:'&#127468;&#127479;',type:'Island'},
+  {name:'New York, USA',flag:'&#127482;&#127480;',type:'Megacity'},
+  {name:'Lisbon, Portugal',flag:'&#127477;&#127481;',type:'Capital'},
+  {name:'Cape Town, South Africa',flag:'&#127487;&#127462;',type:'City'},
+  {name:'Reykjavik, Iceland',flag:'&#127470;&#127480;',type:'Capital'},
+  {name:'Dubrovnik, Croatia',flag:'&#127469;&#127479;',type:'Town'},
+  {name:'Varanasi, India',flag:'&#127470;&#127475;',type:'Holy City'},
+  {name:'Positano, Italy',flag:'&#127470;&#127481;',type:'Village'},
+  {name:'Jiufen, Taiwan',flag:'&#127481;&#127484;',type:'Village'},
+];
+const inp=document.getElementById('searchInput');
+const sb=document.getElementById('suggestBox');
+inp.addEventListener('input',function(){
+  const v=this.value.trim().toLowerCase();
+  if(!v){sb.classList.remove('open');return}
+  const f=SUGGS.filter(s=>s.name.toLowerCase().includes(v)).slice(0,6);
+  if(!f.length){sb.classList.remove('open');return}
+  sb.innerHTML=f.map(s=>`<div class="sugg-item" onclick="selSugg('${s.name.replace(/'/g,"\\'")}')"><span class="sugg-flag">${s.flag}</span><div class="sugg-meta"><span class="sugg-name">${s.name}</span><span class="sugg-type">${s.type}</span></div></div>`).join('');
+  sb.classList.add('open');
+});
+inp.addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();if(e.key==='Escape')sb.classList.remove('open')});
+document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap'))sb.classList.remove('open')});
+function selSugg(n){inp.value=n;sb.classList.remove('open');doSearch()}
+function qs(q){inp.value=q;document.getElementById('hero').scrollIntoView({behavior:'smooth'});setTimeout(doSearch,350)}
+
+let lastQ='';
+async function doSearch(){
+  const q=inp.value.trim();
+  if(!q||q===lastQ)return;
+  lastQ=q;
+  sb.classList.remove('open');
+  const btn=document.getElementById('searchBtn');
+  btn.classList.add('loading');
+  btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 0.7s linear infinite;width:15px;height:15px"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Finding...';
+  document.getElementById('errPill').classList.remove('show');
+  document.getElementById('resultCard').classList.remove('show');
+  document.getElementById('skelCard').classList.add('show');
+  setTimeout(()=>document.getElementById('resultsArea').scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+
+  const prompt=`You are a world travel expert. User searches: "${q}". This can be ANY place on Earth — city, town, village, hamlet, country, island, region.
+Return ONLY valid JSON (no markdown, no backticks):
+{"destination":"Full name","locationType":"city|town|village|country|island|region","country":"Country","tagline":"Evocative poetic 1-line","region":"Continent/region","language":"Language(s)","currency":"Currency (CODE)","timezone":"UTC+X","population":"e.g. 1.4M or 2500","bestFor":"Traveller type","budget":"$XX-$YY/day","budgetBreakdown":{"accommodation":"$XX-$YY","food":"$XX-$YY","transport":"$XX-$YY","activities":"$XX-$YY"},"attractions":[{"name":"Name","emoji":"emoji","description":"2 vivid sentences"},{"name":"Name","emoji":"emoji","description":"2 sentences"},{"name":"Name","emoji":"emoji","description":"2 sentences"},{"name":"Name","emoji":"emoji","description":"2 sentences"}],"cuisine":[{"name":"Dish","emoji":"emoji","note":"Short desc"},{"name":"Dish","emoji":"emoji","note":"Short"},{"name":"Dish","emoji":"emoji","note":"Short"},{"name":"Dish","emoji":"emoji","note":"Short"},{"name":"Dish","emoji":"emoji","note":"Short"}],"tips":[{"emoji":"emoji","text":"Tip 1"},{"emoji":"emoji","text":"Tip 2"},{"emoji":"emoji","text":"Tip 3"},{"emoji":"emoji","text":"Tip 4"}],"seasons":{"spring":{"rating":"best|good|ok|avoid","desc":"Short note"},"summer":{"rating":"best|good|ok|avoid","desc":"Short note"},"autumn":{"rating":"best|good|ok|avoid","desc":"Short note"},"winter":{"rating":"best|good|ok|avoid","desc":"Short note"}},"bestTime":"1-2 sentences about ideal season."}
+Be accurate. For villages use real local knowledge.`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1500,messages:[{role:'user',content:prompt}]})
+    });
+    if(!res.ok){const e=await res.json();throw new Error(e.error?.message||'API error '+res.status)}
+    const data=await res.json();
+    const raw=data.content.map(b=>b.text||'').join('');
+    const info=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    renderResult(info);
+  }catch(err){
+    document.getElementById('skelCard').classList.remove('show');
+    document.getElementById('errMsg').textContent=err.message||'Could not load. Please try again.';
+    document.getElementById('errPill').classList.add('show');
+    lastQ='';
+  }finally{
+    btn.classList.remove('loading');
+    btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Explore';
+  }
+}
+
+function renderResult(d){
+  document.getElementById('skelCard').classList.remove('show');
+  const seaIco={spring:'&#127800;',summer:'&#9728;&#65039;',autumn:'&#127810;',winter:'&#10052;&#65039;'};
+  const bdPct={accommodation:65,food:40,transport:25,activities:35};
+  const bdHTML=Object.entries(d.budgetBreakdown||{}).map(([k,v])=>`
+    <div class="bgt-row">
+      <div class="bgt-lbl">${k.charAt(0).toUpperCase()+k.slice(1)}</div>
+      <div class="bgt-track"><div class="bgt-fill" style="width:0" data-w="${bdPct[k]||30}%"></div></div>
+      <div class="bgt-val">${v}</div>
+    </div>`).join('');
+  const seaHTML=Object.entries(d.seasons||{}).map(([s,v])=>`
+    <div class="sea-card ${v.rating}">
+      <div class="sea-ico">${seaIco[s]||'&#127758;'}</div>
+      <div class="sea-name">${s}</div>
+      <div class="sea-desc">${v.desc}</div>
+      <div class="sea-badge">${{best:'Best time',good:'Good',ok:'OK',avoid:'Avoid'}[v.rating]||v.rating}</div>
+    </div>`).join('');
+  const rc=document.getElementById('resultCard');
+  rc.innerHTML=`
+    <div class="r-banner">
+      <div class="r-banner-top">
+        <div><div class="r-dest">${d.destination}</div><div class="r-tagline">${d.tagline}</div></div>
+        <div class="r-badge">${d.country}</div>
+      </div>
+      <div class="r-stats">
+        <div class="rs"><span class="rs-val">${d.region}</span><span class="rs-lbl">Region</span></div>
+        <div class="rs"><span class="rs-val">${d.locationType}</span><span class="rs-lbl">Type</span></div>
+        <div class="rs"><span class="rs-val">${d.population}</span><span class="rs-lbl">Population</span></div>
+        <div class="rs"><span class="rs-val">${d.budget}</span><span class="rs-lbl">Daily budget</span></div>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="swTab(this,'ov')">Overview</button>
+      <button class="tab-btn" onclick="swTab(this,'at')">Attractions</button>
+      <button class="tab-btn" onclick="swTab(this,'cu')">Cuisine</button>
+      <button class="tab-btn" onclick="swTab(this,'tp')">Tips</button>
+      <button class="tab-btn" onclick="swTab(this,'se')">Best Time</button>
+    </div>
+    <div class="tab-pane active" id="tab-ov">
+      <div class="info-grid">
+        <div class="info-tile"><div class="i-lbl">Language</div><div class="i-val">${d.language}</div></div>
+        <div class="info-tile"><div class="i-lbl">Currency</div><div class="i-val">${d.currency}</div></div>
+        <div class="info-tile"><div class="i-lbl">Timezone</div><div class="i-val">${d.timezone}</div></div>
+        <div class="info-tile"><div class="i-lbl">Best For</div><div class="i-val">${d.bestFor}</div></div>
+      </div>
+      <div class="sec-h">Budget Breakdown</div>
+      <div>${bdHTML}</div>
+      <div style="height:1.5rem"></div>
+      <div class="sec-h">Best Time</div>
+      <div class="btime">&#127780;&#65039; ${d.bestTime}</div>
+    </div>
+    <div class="tab-pane" id="tab-at">
+      <div class="attr-grid">${(d.attractions||[]).map((a,i)=>`
+        <div class="attr-card">
+          <div class="attr-num">${a.emoji} ${String(i+1).padStart(2,'0')}</div>
+          <div class="attr-name">${a.name}</div>
+          <div class="attr-desc">${a.description}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="tab-pane" id="tab-cu">
+      <div class="cuis-grid">${(d.cuisine||[]).map(c=>`
+        <div class="cuis-card">
+          <div class="cuis-emoji">${c.emoji}</div>
+          <div class="cuis-name">${c.name}</div>
+          <div class="cuis-note">${c.note}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="tab-pane" id="tab-tp">
+      <div class="tips-list">${(d.tips||[]).map(t=>`
+        <div class="tip-item"><div class="tip-ico">${t.emoji}</div><div class="tip-txt">${t.text}</div></div>`).join('')}
+      </div>
+    </div>
+    <div class="tab-pane" id="tab-se">
+      <div class="seas-grid">${seaHTML}</div>
+      <div class="btime">&#127780;&#65039; ${d.bestTime}</div>
+    </div>`;
+  rc.classList.add('show');
+  setTimeout(()=>{
+    rc.querySelectorAll('.bgt-fill').forEach(el=>{el.style.width=el.dataset.w});
+    rc.scrollIntoView({behavior:'smooth',block:'nearest'});
+  },120);
+}
+
+function swTab(btn,id){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+}
+
+// scroll reveal
+new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:0.1})
+  .observe=function(el){};
+(function(){
+  const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:0.1});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+})();
+
+buildGrid();
+</script>
+</body>
+</html>
